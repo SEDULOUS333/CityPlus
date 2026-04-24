@@ -1,0 +1,43 @@
+# Node
+node_modules/
+.env
+uploads/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Model files
+ai-model/models/efficientnet/best_model.pth
+
+# Dataset
+ai-model/Dataset/
+
+# Logs
+*.log
+
+# System
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# Build
+/dist/
+
+# OS
+*.swp
+*.swo
+
+# Ignore frontend build outputs
+Frontend/node_modules/
+Frontend/dist/
+
+# Ignore backend build outputs
+Backend/node_modules/
+Backend/uploads/
+
+# Ignore Python virtual environments
+ai-model/venv/

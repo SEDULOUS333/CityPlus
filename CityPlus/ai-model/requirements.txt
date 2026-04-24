@@ -1,0 +1,10 @@
+flask==3.0.0
+flask-cors==4.0.0
+requests==2.31.0
+
+
+# Notes:
+# 
+# This includes FastAPI + Uvicorn for serving the model, Pillow for image handling, TensorFlow/PyTorch and transformers for both image & text models, and requests for calling external services.
+# 
+# You may not need all packages immediately (we'll pick the exact model framework later), but installing them now avoids dependency pain. If disk/CPU is constrained, we can trim to only what you plan to use (e.g., TensorFlow or PyTorch).
