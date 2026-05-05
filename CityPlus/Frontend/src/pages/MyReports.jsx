@@ -51,11 +51,11 @@ export default function MyReports() {
             <h2 className="font-bold text-lg">{r.description}</h2>
 
             {r.imageUrl && (
-              <img
-                src={r.imageUrl}
-                className="w-full h-40 object-cover rounded mt-2"
-                alt="issue"
+              <img src={report.imageUrl}
+              className="w-full h-40 object-cover rounded mt-2"
+              alt="Issue" 
               />
+                
             )}
 
             <p className="text-sm mt-2">
