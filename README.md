@@ -1,3 +1,4 @@
+
 # CityPlus – Civic Issue Reporting Platform
 
 CityPlus is a full-stack web application designed to improve civic engagement by enabling citizens to report public infrastructure issues and track their resolution transparently.
@@ -18,9 +19,9 @@ The platform allows users to submit real-world civic problems—such as potholes
 ### 👤 User Features
 - Secure user registration and login (JWT authentication)
 - Report civic issues with:
-  - Image upload
-  - Issue type selection
-  - Precise geolocation using map
+	- Image upload
+	- Issue type selection
+	- Precise geolocation using map
 - View submitted reports and track their status
 - Delete reports that are still in *open* state
 
@@ -28,14 +29,29 @@ The platform allows users to submit real-world civic problems—such as potholes
 - Admin-only dashboard
 - View all reported issues in one place
 - Update issue status:
-  - Open
-  - In Progress
-  - Resolved
+	- Open
+	- In Progress
+	- Resolved
 - Delete fake or irrelevant reports to maintain data integrity
 
 ### 🗺️ Map-Based Visualization
 - All reported issues displayed on an interactive city map
 - Clickable markers showing issue details and images
+
+---
+
+
+## 🤖 AI/ML Features & Vision
+
+### Current AI Integration
+- **Image Classification:** The backend integrates an AI model (EfficientNet, DistilBERT, etc.) to automatically classify uploaded images into categories such as pothole, garbage, streetlight, waterlogging, or other. This assists in verifying and prioritizing reports.
+- **AI Model Service:** The AI model is deployed as a Python/Flask microservice and is called by the backend when a user submits a report with an image.
+
+### Future AI/ML Enhancements
+- **Text Analysis:** Planned integration of NLP models (e.g., DistilBERT) to analyze and categorize textual descriptions of issues for improved accuracy and automated moderation.
+- **Smart Prioritization:** Use AI to prioritize reports based on severity, frequency, and location data.
+- **Anomaly Detection:** Automatically flag suspicious or duplicate reports using ML algorithms.
+- **Admin Assistance:** AI-powered suggestions for admins to resolve or merge similar issues.
 
 ---
 
@@ -56,7 +72,7 @@ The platform allows users to submit real-world civic problems—such as potholes
 
 ### Deployment
 - **Frontend:** Netlify
-- **Backend:** Railway
+- **Backend:** Render
 - **Image Storage:** Cloudinary
 
 ---
@@ -95,4 +111,4 @@ This project is developed for educational and demonstration purposes.
 
 - OpenStreetMap contributors
 - Cloudinary for image hosting
-- Railway & Netlify for deployment support
+- Render & Netlify for deployment support
