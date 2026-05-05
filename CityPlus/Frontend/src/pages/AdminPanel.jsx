@@ -91,7 +91,7 @@ export default function AdminPanel() {
 
             {report.imageUrl && (
               <img
-                src={`http://localhost:5000${report.imageUrl}`}
+                src={report.imageUrl}
                 alt="Issue"
                 className="w-full h-48 object-cover rounded mb-3"
               />
