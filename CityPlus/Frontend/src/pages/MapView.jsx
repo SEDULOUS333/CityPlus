@@ -99,7 +99,7 @@ export default function MapView() {
 
                       {report.imageUrl && (
                         <img
-                          src={`http://localhost:5000${report.imageUrl}`}
+                          src={report.imageUrl}
                           alt="Issue"
                           className="mt-2 w-40 rounded-md"
                         />
