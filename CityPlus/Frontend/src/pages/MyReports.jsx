@@ -52,7 +52,7 @@ export default function MyReports() {
 
             {r.imageUrl && (
               <img
-                src={`http://localhost:5000${r.imageUrl}`}
+                src={r.imageUrl}
                 className="w-full h-40 object-cover rounded mt-2"
                 alt="issue"
               />
