@@ -11,6 +11,6 @@ requests==2.31.0
 
 # Pinned versions for production (May 2026)
 torch==2.9.0
-torchvision==0.18.0
+torchvision==0.26.0
 Pillow==10.3.0
 gunicorn==21.2.0
