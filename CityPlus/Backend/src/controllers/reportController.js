@@ -1,8 +1,6 @@
 // src/controllers/reportController.js
 
-import fs from "fs";
 import axios from "axios";
-import FormData from "form-data";
 import Report from "../models/Report.js";
 
 import upload from "../middleware/uploadMiddleware.js";
@@ -31,10 +29,13 @@ export const createReport = async (req, res) => {
     let aiTextResult = { predicted: type, confidence: 0.55 };
 
     try {
-      // Optionally, you can implement Hugging Face text endpoint here if available
-      const textRes = await axios.post("https://ai-model-48tb.onrender.com/predict/text", {
-        text: description,
-      });
+      const textRes = await axios.post(
+        "https://ai-model-48tb.onrender.com/predict/text",
+        {
+          text: description,
+        }
+      );
+
       aiTextResult = textRes.data;
     } catch (err) {
       console.log("AI TEXT ERROR:", err.message);
@@ -47,23 +48,48 @@ export const createReport = async (req, res) => {
 
     try {
       if (req.file && imageUrl) {
-        // Download image from Cloudinary URL
-        const response = await axios.get(imageUrl, { responseType: "stream" });
-        const formData = new FormData();
-        // Hugging Face expects the key to be 'image'
-        formData.append("image", response.data, {
-          filename: "image.jpg",
+
+        // Download image from Cloudinary
+        const response = await axios.get(imageUrl, {
+          responseType: "arraybuffer",
         });
 
+        // Convert image to base64
+        const base64Image = Buffer.from(response.data, "binary").toString("base64");
+
+        // STEP 1: Send image to Hugging Face
         const imgRes = await axios.post(
-          "https://sedulous333-cityplus-ai-model.hf.space/predict",
-          formData,
-          { headers: formData.getHeaders() }
+          "https://sedulous333-cityplus-ai-model.hf.space/gradio_api/call/predict",
+          {
+            data: [`data:image/jpeg;base64,${base64Image}`],
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
-        aiImageResult = imgRes.data;
+
+        // STEP 2: Get event ID
+        const eventId = imgRes.data.event_id;
+
+        // STEP 3: Fetch prediction result
+        const result = await axios.get(
+          `https://sedulous333-cityplus-ai-model.hf.space/gradio_api/call/predict/${eventId}`
+        );
+
+        // STEP 4: Extract AI result
+        const output = result.data;
+
+        if (output?.data?.[0]) {
+          aiImageResult = output.data[0];
+        }
       }
     } catch (err) {
-      console.log("AI IMAGE ERROR:", err.message);
+      console.log(
+        "AI IMAGE ERROR:",
+        err.response?.data || err.message
+      );
     }
 
     // -------------------------------
@@ -106,9 +132,13 @@ export const createReport = async (req, res) => {
       message: "Report created successfully",
       report: newReport,
     });
+
   } catch (err) {
     console.error("Error creating report:", err.message);
-    res.status(500).json({ message: "Error creating report" });
+
+    res.status(500).json({
+      message: "Error creating report",
+    });
   }
 };
 
@@ -118,10 +148,15 @@ export const createReport = async (req, res) => {
 export const getReports = async (req, res) => {
   try {
     const reports = await Report.find().sort({ createdAt: -1 });
+
     res.status(200).json(reports);
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error fetching reports" });
+
+    res.status(500).json({
+      message: "Error fetching reports",
+    });
   }
 };
 
@@ -131,11 +166,22 @@ export const getReports = async (req, res) => {
 export const getMyReports = async (req, res) => {
   try {
     const userId = req.user.id;
-    const myReports = await Report.find({ userId }).sort({ createdAt: -1 });
+
+    const myReports = await Report.find({ userId }).sort({
+      createdAt: -1,
+    });
+
     return res.status(200).json(myReports);
+
   } catch (err) {
-    console.error("Error fetching user's reports:", err.message);
-    res.status(500).json({ message: "Error fetching your reports" });
+    console.error(
+      "Error fetching user's reports:",
+      err.message
+    );
+
+    res.status(500).json({
+      message: "Error fetching your reports",
+    });
   }
 };
 
@@ -154,16 +200,22 @@ export const updateReportStatus = async (req, res) => {
     );
 
     if (!updatedReport) {
-      return res.status(404).json({ message: "Report not found" });
+      return res.status(404).json({
+        message: "Report not found",
+      });
     }
 
     return res.status(200).json({
       message: "Status updated",
       report: updatedReport,
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error updating report" });
+
+    res.status(500).json({
+      message: "Error updating report",
+    });
   }
 };
 
@@ -175,22 +227,31 @@ export const deleteReport = async (req, res) => {
     const { id } = req.params;
 
     const report = await Report.findById(id);
-    if (!report) return res.status(404).json({ message: "Report not found" });
 
-    if (report.userId.toString() !== req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "Not authorized to delete this report" });
+    if (!report) {
+      return res.status(404).json({
+        message: "Report not found",
+      });
     }
 
-    // No local file deletion needed for Cloudinary images
+    if (report.userId.toString() !== req.user.id) {
+      return res.status(403).json({
+        message: "Not authorized to delete this report",
+      });
+    }
 
     await report.deleteOne();
 
-    return res.status(200).json({ message: "Report deleted successfully" });
+    return res.status(200).json({
+      message: "Report deleted successfully",
+    });
+
   } catch (err) {
     console.error("Delete Error:", err.message);
-    res.status(500).json({ message: "Error deleting report" });
+
+    res.status(500).json({
+      message: "Error deleting report",
+    });
   }
 };
 
