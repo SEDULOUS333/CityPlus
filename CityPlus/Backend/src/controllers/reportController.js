@@ -75,6 +75,8 @@ export const createReport = async (req, res) => {
 
         const output = result.data;
 
+        console.log("FULL HF OUTPUT:", JSON.stringify(output, null, 2));
+
         if (output?.data?.[0]) {
           aiImageResult = output.data[0];
         }
