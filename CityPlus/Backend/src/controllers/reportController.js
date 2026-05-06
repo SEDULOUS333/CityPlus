@@ -5,8 +5,6 @@ import Report from "../models/Report.js";
 
 import upload from "../middleware/uploadMiddleware.js";
 
-
-
 // ---------------------------------------------------
 // CREATE REPORT WITH AI INTEGRATION
 // ---------------------------------------------------
@@ -26,59 +24,47 @@ export const createReport = async (req, res) => {
     // -----------------------
     // AI TEXT PREDICTION
     // -----------------------
-    let aiTextResult = { predicted: type, confidence: 0.55 };
 
-    try {
-      const textRes = await axios.post(
-        "https://ai-model-48tb.onrender.com/predict/text",
-        {
-          text: description,
-        }
-      );
-
-      aiTextResult = textRes.data;
-    } catch (err) {
-      console.log("AI TEXT ERROR:", err.message);
-    }
+    let aiTextResult = {
+      predicted: type,
+      confidence: 0.55,
+    };
 
     // -----------------------
     // AI IMAGE PREDICTION
     // -----------------------
-    let aiImageResult = { predicted: type, confidence: 0.40 };
+    // -----------------------
+    // AI IMAGE PREDICTION
+    // -----------------------
+    let aiImageResult = { predicted: type, confidence: 0.4 };
 
     try {
       if (req.file && imageUrl) {
-
-        // Download image from Cloudinary
-        const response = await axios.get(imageUrl, {
-          responseType: "arraybuffer",
-        });
-
-        // Convert image to base64
-        const base64Image = Buffer.from(response.data, "binary").toString("base64");
-
-        // STEP 1: Send image to Hugging Face
+        // Send image URL directly to Hugging Face
         const imgRes = await axios.post(
           "https://sedulous333-cityplus-ai-model.hf.space/gradio_api/call/predict",
           {
-            data: [`data:image/jpeg;base64,${base64Image}`],
+            data: [
+              {
+                path: imageUrl,
+              },
+            ],
           },
           {
             headers: {
               "Content-Type": "application/json",
             },
-          }
+          },
         );
 
-        // STEP 2: Get event ID
+        // Get event ID
         const eventId = imgRes.data.event_id;
 
-        // STEP 3: Fetch prediction result
+        // Fetch result
         const result = await axios.get(
-          `https://sedulous333-cityplus-ai-model.hf.space/gradio_api/call/predict/${eventId}`
+          `https://sedulous333-cityplus-ai-model.hf.space/gradio_api/call/predict/${eventId}`,
         );
 
-        // STEP 4: Extract AI result
         const output = result.data;
 
         if (output?.data?.[0]) {
@@ -86,10 +72,7 @@ export const createReport = async (req, res) => {
         }
       }
     } catch (err) {
-      console.log(
-        "AI IMAGE ERROR:",
-        err.response?.data || err.message
-      );
+      console.log("AI IMAGE ERROR:", err.response?.data || err.message);
     }
 
     // -------------------------------
@@ -97,15 +80,15 @@ export const createReport = async (req, res) => {
     // -------------------------------
     let finalAIType = type;
 
-    if (aiImageResult.confidence >= 0.70) {
+    if (aiImageResult.confidence >= 0.7) {
       finalAIType = aiImageResult.predicted;
-    } else if (aiTextResult.confidence >= 0.70) {
+    } else if (aiTextResult.confidence >= 0.7) {
       finalAIType = aiTextResult.predicted;
     }
 
     const finalConfidence = Math.max(
       aiImageResult.confidence,
-      aiTextResult.confidence
+      aiTextResult.confidence,
     );
 
     // ---------------------------------------------------
@@ -132,7 +115,6 @@ export const createReport = async (req, res) => {
       message: "Report created successfully",
       report: newReport,
     });
-
   } catch (err) {
     console.error("Error creating report:", err.message);
 
@@ -150,7 +132,6 @@ export const getReports = async (req, res) => {
     const reports = await Report.find().sort({ createdAt: -1 });
 
     res.status(200).json(reports);
-
   } catch (err) {
     console.error(err);
 
@@ -172,12 +153,8 @@ export const getMyReports = async (req, res) => {
     });
 
     return res.status(200).json(myReports);
-
   } catch (err) {
-    console.error(
-      "Error fetching user's reports:",
-      err.message
-    );
+    console.error("Error fetching user's reports:", err.message);
 
     res.status(500).json({
       message: "Error fetching your reports",
@@ -196,7 +173,7 @@ export const updateReportStatus = async (req, res) => {
     const updatedReport = await Report.findByIdAndUpdate(
       id,
       { status },
-      { new: true }
+      { new: true },
     );
 
     if (!updatedReport) {
@@ -209,7 +186,6 @@ export const updateReportStatus = async (req, res) => {
       message: "Status updated",
       report: updatedReport,
     });
-
   } catch (err) {
     console.error(err);
 
@@ -245,7 +221,6 @@ export const deleteReport = async (req, res) => {
     return res.status(200).json({
       message: "Report deleted successfully",
     });
-
   } catch (err) {
     console.error("Delete Error:", err.message);
 
