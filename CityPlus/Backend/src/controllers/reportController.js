@@ -31,7 +31,7 @@ export const createReport = async (req, res) => {
     let aiTextResult = { predicted: type, confidence: 0.55 };
 
     try {
-      const textRes = await axios.post("http://localhost:8000/predict/text", {
+      const textRes = await axios.post("https://ai-model-48tb.onrender.com/predict/text", {
         text: description,
       });
       aiTextResult = textRes.data;
@@ -54,7 +54,7 @@ export const createReport = async (req, res) => {
         });
 
         const imgRes = await axios.post(
-          "http://localhost:8000/predict/image",
+          "https://ai-model-48tb.onrender.com/predict/image",
           formData,
           { headers: formData.getHeaders() }
         );
