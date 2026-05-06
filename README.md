@@ -92,12 +92,12 @@ CityPlus is a next-generation civic engagement platform that empowers citizens t
 
 ```mermaid
 flowchart TD
-	A[User uploads report] --> B[Cloudinary stores image]
-	B --> C[Backend API receives report]
-	C --> D[AI model (Hugging Face) predicts issue type]
-	D --> E[Prediction + confidence returned]
-	E --> F[MongoDB stores report + AI result]
-	F --> G[Admin dashboard & user tracking]
+    A[User uploads report] --> B[Cloudinary stores image]
+    B --> C[Backend API receives report]
+    C --> D[AI Model - Hugging Face predicts issue type]
+    D --> E[Prediction and confidence returned]
+    E --> F[MongoDB stores report and AI result]
+    F --> G[Admin dashboard and user tracking]
 ```
 
 ---
