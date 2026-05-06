@@ -26,14 +26,22 @@ print("Loaded Labels:", LABELS)
 # -----------------------------
 # Load EfficientNet Model
 # -----------------------------
-MODEL_PATH = "models/efficientnet/best_model.pth"
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = models.efficientnet_b0(weights=None)
-model.classifier[1] = nn.Linear(model.classifier[1].in_features, NUM_CLASSES)
-model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
-model.eval()
-model.to(device)
+MODEL_PATH = "models/efficientnet/best_model.pth"
+device = torch.device("cpu")  # Force CPU for low memory
+model = None
+
+def load_model():
+    global model
+    if model is None:
+        m = models.efficientnet_b0(weights=None)
+        m.classifier[1] = nn.Linear(m.classifier[1].in_features, NUM_CLASSES)
+        m.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+        m.eval()
+        m.to(device)
+        model = m
+
+load_model()
 
 # -----------------------------
 # Image Transform
@@ -47,6 +55,7 @@ def predict_image(img_path):
     img = Image.open(img_path).convert("RGB")
     img = img_tf(img).unsqueeze(0).to(device)
 
+    load_model()  # Ensure model is loaded
     with torch.no_grad():
         outputs = model(img)
         probs = torch.softmax(outputs, dim=1)[0]
