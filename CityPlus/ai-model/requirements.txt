@@ -2,15 +2,7 @@ flask==3.0.0
 flask-cors==4.0.0
 requests==2.31.0
 
-
-# Notes:
-# 
-# This includes FastAPI + Uvicorn for serving the model, Pillow for image handling, TensorFlow/PyTorch and transformers for both image & text models, and requests for calling external services.
-# 
-# You may not need all packages immediately (we'll pick the exact model framework later), but installing them now avoids dependency pain. If disk/CPU is constrained, we can trim to only what you plan to use (e.g., TensorFlow or PyTorch).
-
-# Pinned versions for production (May 2026)
-torch==2.9.0
-torchvision==0.26.0
-Pillow==9.5.0
+torch==2.2.2
+torchvision==0.17.2
+Pillow==10.2.0
 gunicorn==21.2.0
