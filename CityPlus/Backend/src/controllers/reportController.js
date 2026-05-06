@@ -33,20 +33,28 @@ export const createReport = async (req, res) => {
     // -----------------------
     // AI IMAGE PREDICTION
     // -----------------------
-    // -----------------------
-    // AI IMAGE PREDICTION
-    // -----------------------
+
     let aiImageResult = { predicted: type, confidence: 0.4 };
 
     try {
       if (req.file && imageUrl) {
-        // Send image URL directly to Hugging Face
+        // Download image
+        const response = await axios.get(imageUrl, {
+          responseType: "arraybuffer",
+        });
+
+        // Convert to base64
+        const base64Image = Buffer.from(response.data, "binary").toString(
+          "base64",
+        );
+
+        // Send to Hugging Face Gradio API
         const imgRes = await axios.post(
           "https://sedulous333-cityplus-ai-model.hf.space/gradio_api/call/predict",
           {
             data: [
               {
-                path: imageUrl,
+                url: `data:image/jpeg;base64,${base64Image}`,
               },
             ],
           },
@@ -60,7 +68,7 @@ export const createReport = async (req, res) => {
         // Get event ID
         const eventId = imgRes.data.event_id;
 
-        // Fetch result
+        // Fetch final result
         const result = await axios.get(
           `https://sedulous333-cityplus-ai-model.hf.space/gradio_api/call/predict/${eventId}`,
         );
@@ -70,6 +78,8 @@ export const createReport = async (req, res) => {
         if (output?.data?.[0]) {
           aiImageResult = output.data[0];
         }
+
+        console.log("AI IMAGE RESULT:", aiImageResult);
       }
     } catch (err) {
       console.log("AI IMAGE ERROR:", err.response?.data || err.message);
