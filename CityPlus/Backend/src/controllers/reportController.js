@@ -77,8 +77,20 @@ export const createReport = async (req, res) => {
 
         console.log("FULL HF OUTPUT:", JSON.stringify(output, null, 2));
 
-        if (output?.data?.[0]) {
-          aiImageResult = output.data[0];
+        const raw = result.data;
+
+        // Extract actual response string
+        const match = raw.match(/data:\s*(.*)/);
+
+        if (match && match[1]) {
+          const parsed = JSON.parse(match[1]);
+
+          const prediction = parsed[0];
+
+          aiImageResult = {
+            predicted: prediction.label,
+            confidence: prediction.confidences[0].confidence,
+          };
         }
 
         console.log("AI IMAGE RESULT:", aiImageResult);
