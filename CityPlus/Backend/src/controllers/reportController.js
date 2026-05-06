@@ -31,6 +31,7 @@ export const createReport = async (req, res) => {
     let aiTextResult = { predicted: type, confidence: 0.55 };
 
     try {
+      // Optionally, you can implement Hugging Face text endpoint here if available
       const textRes = await axios.post("https://ai-model-48tb.onrender.com/predict/text", {
         text: description,
       });
@@ -49,12 +50,13 @@ export const createReport = async (req, res) => {
         // Download image from Cloudinary URL
         const response = await axios.get(imageUrl, { responseType: "stream" });
         const formData = new FormData();
-        formData.append("file", response.data, {
+        // Hugging Face expects the key to be 'image'
+        formData.append("image", response.data, {
           filename: "image.jpg",
         });
 
         const imgRes = await axios.post(
-          "https://ai-model-48tb.onrender.com/predict/image",
+          "https://sedulous333-cityplus-ai-model.hf.space/predict",
           formData,
           { headers: formData.getHeaders() }
         );
