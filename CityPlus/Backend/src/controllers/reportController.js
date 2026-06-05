@@ -234,7 +234,10 @@ export const deleteReport = async (req, res) => {
       });
     }
 
-    if (report.userId.toString() !== req.user.id) {
+    const isOwner = report.userId && report.userId.toString() === req.user.id;
+    const isAdmin = req.user?.role === "admin";
+
+    if (!isOwner && !isAdmin) {
       return res.status(403).json({
         message: "Not authorized to delete this report",
       });
